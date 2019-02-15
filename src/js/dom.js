@@ -77,25 +77,73 @@ window.onload = () => {
       }
       registerPost(contect, statusRadio, email);
     })
+
+document.getElementById('my_profile').addEventListener('click',
+(event) =>{
+  event.preventDefault();
+
+ 
+})
   const readPostFromDatabase = () => {
     postContainer.innerHTML = "";
-    readPost((post) => {
+    readPostPublic((post) => {
+      obtPost = Object.values(post.val());
+      console.log(obtPost[0]);
       postContainer.innerHTML +=
         `<h6>Publicación de:${post.val().email}</h6>
-               <input type="text" value="${post.val().post}">
-               <h6>${post.val().status}</h6>
-               <h6>${post.key}</h6>
-               <button type="button" id="${post.key}">Comentar</button>
-               <button type="button" id="delete_btn${post.key}" class="deletePost">Eliminar</button>
-              <button id="edit_${post.key}" type="button" >Editar</button>`;//eliminar post
+        <textarea class="post_txt">${post.val().post}</textarea>
+        <h6>${post.val().status}</h6>
+        <button type="button" id="coment_btn_${post.key}" class="comentPost">Comentar</button>
+        <button type="button" id="delete_btn${post.key}" class="deletePost">Eliminar</button>
+        <button type="button" id="edit_btn${post.key}" class="editPost" >Editar</button>`;
+
       //hago una coleccion de botones
       let coleccButton = document.getElementsByClassName("deletePost");
       for (let i = 0; i < coleccButton.length; i++) {
         coleccButton[i].addEventListener("click", deletePost);
       }
-      
-    });
 
+      let coleccButtonComent = document.getElementsByClassName("comentPost");
+      for (let i = 0; i < coleccButtonComent.length; i++) {
+        coleccButtonComent[i].addEventListener("click",comentPost = (key) => {
+          const botonId = key.target.getAttribute("id").substring(11, 50);
+          const modal = document.getElementById('myModal');
+          const span = document.getElementsByClassName("close")[0];
+          modal.style.display = "block";
+          modal.innerHTML = `
+            <div class="modal-content">
+              <div class="container">
+                <div class="row">
+                  <div class="col-12">
+                    <input type="hidden" id="key_post_txt" value="${botonId}">
+                    <textarea id="coment_post_txt" placeholder="¿Que quieres comentar?"></textarea><br>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-6">
+                    <button id="coment_post_btn">Comentar</button>
+                  </div>
+               </div>
+              </div>
+            </div>`;
+         
+          window.onclick = function (event) {
+            if (event.target == modal) {
+              modal.style.display = "none";
+            }
+          }
+
+          document.getElementById('coment_post_btn').addEventListener('click',
+          (event) => {
+            event.preventDefault();
+            const keyPost = key_post_txt.value;
+            const  comentPost= coment_post_txt.value;
+            registerComentPostPublic(keyPost, comentPost);
+            modal.style.display = "none";
+          })
+        });
+      }
+    });
   }
 
 };
